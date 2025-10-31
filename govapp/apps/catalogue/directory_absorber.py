@@ -411,6 +411,7 @@ class Absorber:
             catalogue_entry=catalogue_entry,
             geojson=geojson_path
         )
+        logger.info(f'LayerSubmission: [{layer_submission}] has been created for the CatalogueEntry: [{catalogue_entry}].')
         return layer_submission
 
     def create_or_update_layer_metadata(self, metadata, catalogue_entry):

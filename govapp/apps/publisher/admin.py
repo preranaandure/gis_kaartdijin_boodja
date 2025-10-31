@@ -12,11 +12,19 @@ from govapp.apps.catalogue.admin import construct_catalogue_entry_link
 from govapp.apps.publisher import models
 from govapp.apps.publisher.models.geoserver_queues import GeoServerQueueStatus
 from govapp.apps.publisher.models.geoserver_roles_groups import GeoServerGroupUser, GeoServerRoleUser
+from govapp.apps.publisher.models.notifications import EmailNotification
 from govapp.apps.publisher.models.publish_entries import PublishEntryStatus
 
 
 def construct_publish_entry_link(publish_entry):
     return format_html(f'<a href="/admin/publisher/publishentry/{publish_entry.id}/change/">{publish_entry.name}</a>')
+
+
+class EmailNotificationInline(admin.TabularInline):
+    """Inline admin for Email Notifications."""
+    model = EmailNotification
+    fields = ('name', 'email', 'type', 'active')
+    extra = 0
 
 
 class PublishEntryAdmin(reversion.admin.VersionAdmin):
@@ -27,6 +35,7 @@ class PublishEntryAdmin(reversion.admin.VersionAdmin):
     filter_horizontal = ["editors"]
     list_display = ('id', 'catalogue_entry_link', 'get_status', 'assigned_to', 'published_at')
     list_filter = ('status', 'assigned_to',)
+    inlines = [EmailNotificationInline,]
     ordering = ('-id',)
 
     class Media:
