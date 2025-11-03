@@ -26,7 +26,7 @@ class GeoServerSyncUsersCronJob(django_cron.CronJobBase):
         management.call_command("sync_users")
 
 
-class SyncItassetsUsersCronJob(django_cron.CronJobBase):
+class ItassetsUsersSyncCronJob(django_cron.CronJobBase):
     schedule = django_cron.Schedule(run_every_mins=conf.settings.SYNC_ITASSETS_USERS_PERIOD_MINS)
     code = "govapp.accounts.sync_itassets_users"
 

@@ -338,7 +338,7 @@ CRON_CLASSES = [
     "govapp.apps.publisher.cron.GeoServerSyncLayersCronJob", # layers
     "govapp.apps.publisher.cron.GeoServerSyncRulesCronJob", # rules
     "govapp.apps.accounts.cron.GeoServerSyncUsersCronJob", # users
-    "govapp.apps.accounts.cron.SyncItassetsUsersCronJob", # users
+    "govapp.apps.accounts.cron.ItassetsUsersSyncCronJob", # users
     'appmonitor_client.cron.CronJobAppMonitorClient'
 ]
 MANAGEMENT_COMMANDS_PAGE_ENABLED = decouple.config('MANAGEMENT_COMMANDS_PAGE_ENABLED', default=False, cast=bool)
