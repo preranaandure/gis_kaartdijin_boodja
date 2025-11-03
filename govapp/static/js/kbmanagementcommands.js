@@ -4,6 +4,7 @@ var kbmanagementcommands = {
         "get_sharepoint_submission_url" :"/api/management/commands/get_sharepoint_submissions/",
         "get_postgis_submission_url" :"/api/management/commands/get_postgis_submissions/",
         "geoserver_queue_cron_job" :"/api/management/commands/excute_geoserver_queue/",
+        "itassets_users_sync_cron_job" :"/api/management/commands/excute_itassets_users_sync/",
         "geoserver_queue_sync_job" : "/api/management/commands/excute_geoserver_sync/",
         "run_randomize_password": "/api/management/commands/randomize_password/",
         "geoserver_layer_healthcheck": "/api/management/commands/perform_geoserver_layer_healthcheck/",
@@ -101,7 +102,32 @@ var kbmanagementcommands = {
             },
         });
     },
+    run_itassets_users_sync_cron_job: function() {
+        console.log('here')
+        $('#itassets-users-sync-job-response-success').html('');
+        $('#itassets-users-sync-job-response-error').html('');
+        var csrf_token = $("#csrfmiddlewaretoken").val();
+        $('#run-itassets-users-sync').attr('disabled','disabled');
+        $('#run-itassets-users-sync-loader').show();
+        $.ajax({
+            url: kbmanagementcommands.var.itassets_users_sync_cron_job,
+            type: 'POST',
+            headers: {'X-CSRFToken' : csrf_token},
+            contentType: 'application/json',
+            success: function (response) {
+                $('#itassets-users-sync-job-response-success').html("Completed");
+                $('#run-itassets-users-sync').removeAttr('disabled');
+                $('#run-itassets-users-sync-loader').hide();
+            },
+            error: function (error) {
+                $('#itassets-users-sync-job-response-error').html("Error running job");
+                $('#run-itassets-users-sync').removeAttr('disabled');
+                $('#run-itassets-users-sync-loader').hide();
+            },
+        });
+    },
     run_geoserver_queue_cron_job: function() {
+        console.log('aho2')
         $('#geoserver-queue-job-response-success').html('');
         $('#geoserver-queue-job-response-error').html('');
         var csrf_token = $("#csrfmiddlewaretoken").val();
@@ -203,6 +229,7 @@ var kbmanagementcommands = {
         });
     },
     init: function() {
+        console.log('init')
         $( "#run-scanner" ).click(function() {
             kbmanagementcommands.run_scanner();
         });
@@ -214,6 +241,9 @@ var kbmanagementcommands = {
         });
         $( "#run-geoserver-queue" ).click(function() {
             kbmanagementcommands.run_geoserver_queue_cron_job();
+        });
+        $( "#run-itassets-users-sync" ).click(function() {
+            kbmanagementcommands.run_itassets_users_sync_cron_job();
         });
         $( "#run-geoserver-sync-layers" ).click(function() {
             kbmanagementcommands.run_geoserver_sync_cron_job('layers');
@@ -243,6 +273,7 @@ var kbmanagementcommands = {
         $('#run-sharepoint-scanner-loader').hide();
         $('#run-postgis-scanner-loader').hide();
         $('#run-geoserver-queue-loader').hide();
+        $('#run-itassets-users-sync-loader').hide();
         $('#run-geoserver-auto-enqueue-loader').hide();
     }
 }
