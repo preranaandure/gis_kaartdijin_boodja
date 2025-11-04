@@ -12,6 +12,7 @@ from govapp.apps.catalogue import models
 from govapp.apps.catalogue.models.catalogue_entries import CatalogueEntryStatus
 from govapp.apps.catalogue.models.layer_submissions import LayerSubmissionStatus
 from govapp.apps.catalogue.models.layer_subscriptions import LayerSubscriptionStatus, LayerSubscriptionType
+from govapp.apps.catalogue.models.notifications import EmailNotification
 
 # class CatalogueModelAdmin(reversion.admin.VersionAdmin):
 #     ordering = ('id', 'name')
@@ -23,6 +24,15 @@ def construct_catalogue_entry_link(catalogue_entry):
 class CatalogueEntryPermissionInline(admin.TabularInline):
     model = models.permission.CatalogueEntryPermission
     raw_id_fields = ('user',)
+    extra = 0
+
+
+class EmailNotificationInline(admin.TabularInline):
+    """Inline admin for Email Notifications."""
+    model = EmailNotification
+    fields = ('name', 'email', 'type', 'active')
+    extra = 0
+
 
 class CatalogueEntryAdmin(reversion.admin.VersionAdmin):
     """Custom Django Admin for Catalogue Entries."""
@@ -34,7 +44,7 @@ class CatalogueEntryAdmin(reversion.admin.VersionAdmin):
     list_filter = ('status', 'type', 'assigned_to', 'custodian', 'permission_type')
     list_display_links = ('id', 'name',)
     ordering = ('id',)
-    inlines = [CatalogueEntryPermissionInline]
+    inlines = [CatalogueEntryPermissionInline, EmailNotificationInline,]
     raw_id_fields = ('custodian', 'assigned_to')
 
     class Media:

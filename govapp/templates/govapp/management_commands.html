@@ -116,6 +116,20 @@
                                           </td>
                                     </tr>
                                     <tr>
+                                          <td>Run Itassets Users Sync and Group Assignment Cron Job</td>
+                                          <td>Performs a complete user setup. First, it syncs accounts from Itassets, then assigns all {{ target_domain }} users to the default '{{ default_group_name }}' group.</td>
+                                          <td><button class='btn btn-primary btn-sm' id='run-itassets-users-sync'>RUN</button>
+                                                <button class="btn btn-primary btn-sm" type="button" id='run-itassets-users-sync-loader' disabled>
+                                                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                      <span class="visually-hidden">Loading...</span>
+                                                </button>
+                                          </td>
+                                          <td>
+                                                <span id='itassets-users-sync-job-response-success' class='text-success'></span>
+                                                <span id='itassets-users-sync-job-response-error' class='text-danger'></span>
+                                          </td>
+                                    </tr>
+                                    <tr>
                                           <td>Run Geoserver Health Check</td>
                                           <td>Perform a health check on all layers of each enabled Geoserver based on all publish channels with an active status of True.</td>
                                           <td><button class='btn btn-primary btn-sm' id='run-geoserver-layer-healthcheck'>RUN</button>

@@ -12,4 +12,9 @@ class AccountsConfig(apps.AppConfig):
 
     def ready(self) -> None:
         import govapp.apps.accounts.signals
+        # Import the checks module to register the system checks.
+        # The checks are automatically registered with Django's check framework
+        # when this module is imported, thanks to the @register decorator.
+        from . import checks
+
         return super().ready()

@@ -60,7 +60,7 @@ def catalogue_entry_update_success(entry: "catalogue_entries.CatalogueEntry") ->
 
     # Send Emails
     emails.CatalogueEntryUpdateSuccessEmail().send_to(
-        *utils.all_administrators(),  # All administrators
+        # *utils.all_administrators(),  # All administrators
         *editors_list,  # All editors
         *entry.email_notifications(manager="on_new_data").filter(active=True).all(),  # type: ignore[operator]
         *entry.email_notifications(manager="both").filter(active=True).all(),  # type: ignore[operator]
@@ -113,23 +113,23 @@ def catalogue_entry_update_failure(entry: "catalogue_entries.CatalogueEntry") ->
     )
 
 
-def catalogue_entry_lock(entry: "catalogue_entries.CatalogueEntry") -> None:
-    """Sends notifications for a Catalogue Entry lock.
+# def catalogue_entry_lock(entry: "catalogue_entries.CatalogueEntry") -> None:
+#     """Sends notifications for a Catalogue Entry lock.
 
-    Args:
-        entry (catalogue_entries.CatalogueEntry): Catalogue Entry to notify for
-    """
+#     Args:
+#         entry (catalogue_entries.CatalogueEntry): Catalogue Entry to notify for
+#     """
 
-    editors = entry.editors.all()
-    editors_list = []
-    for ed in editors:
-        editors_list.append(ed.user)
+#     editors = entry.editors.all()
+#     editors_list = []
+#     for ed in editors:
+#         editors_list.append(ed.user)
 
-    # Send Emails
-    emails.CatalogueEntryLockedEmail().send_to(
-        *utils.all_administrators(),  # All administrators
-        *editors_list,  # All editors
-        *entry.email_notifications(manager="on_lock").filter(active=True).all(),  # type: ignore[operator]
-        *entry.email_notifications(manager="both").filter(active=True).all(),  # type: ignore[operator]
-        context={"name": entry.name},
-    )
+#     # Send Emails
+#     emails.CatalogueEntryLockedEmail().send_to(
+#         # *utils.all_administrators(),  # All administrators
+#         *editors_list,  # All editors
+#         *entry.email_notifications(manager="on_lock").filter(active=True).all(),  # type: ignore[operator]
+#         *entry.email_notifications(manager="both").filter(active=True).all(),  # type: ignore[operator]
+#         context={"name": entry.name},
+#     )

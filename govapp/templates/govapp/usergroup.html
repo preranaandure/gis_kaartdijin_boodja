@@ -417,9 +417,11 @@
                 $('#geoservergroup_users_table').DataTable({
                     "processing": true,
                     "serverSide": true,
+                    "paging": true,
                     "ajax": {
                         "url": "/api/publish/geoservergroup/{{ geoserver_group.id }}/users_related/",
                         "type": "GET",
+                        "dataSrc": "data"
                     },
                     "columnDefs": [
                         {
@@ -452,10 +454,9 @@
                             }
                         }
                     ],
-                    "paging": false,
-                    "info": false,
-                    "pageLength": -1,
-                    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    "info": true,
+                    "pageLength": 25,
+                    "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
                     "searching": false,
                     "ordering": true
                 });

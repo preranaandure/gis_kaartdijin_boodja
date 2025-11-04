@@ -109,7 +109,10 @@ class ManagementCommandsView(base.TemplateView):
 
     def get(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
         # Construct Context
-        context: dict[str, Any] = {}
+        context = {
+            'default_group_name': settings.GEOSERVER_GROUP_DBCA_USERS,
+            'target_domain': f"@{settings.DEPT_DOMAINS}"
+        }
 
         # Render Template and Return
         return shortcuts.render(request, self.template_name, context)

@@ -338,7 +338,7 @@ var kblayersubmission = {
                 common_entity_modal.hide_progress();
             },
             error: function(xhr, status, error) {
-                common_entity_modal.show_alert("The target file does not exists.");
+                common_entity_modal.show_alert("The target file does not exist.");
                 console.error(error);
             }
         });

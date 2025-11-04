@@ -1,0 +1,6 @@
+{% extends 'base_email.txt' %}
+
+{% block content %}
+There was an error running the Sync Itassets UsersScript.   See error information below:
+{{ ad_error }}
+{% endblock %}

@@ -24,3 +24,15 @@ class GeoServerSyncUsersCronJob(django_cron.CronJobBase):
 
         # Run Management Command
         management.call_command("sync_users")
+
+
+class ItassetsUsersSyncCronJob(django_cron.CronJobBase):
+    schedule = django_cron.Schedule(run_every_mins=conf.settings.SYNC_ITASSETS_USERS_PERIOD_MINS)
+    code = "govapp.accounts.sync_itassets_users"
+
+    def do(self) -> None:
+        log.info("Sync itassets users cron job triggered, running...")
+
+        # Run Management Command
+        management.call_command("sync_itassets_users")
+

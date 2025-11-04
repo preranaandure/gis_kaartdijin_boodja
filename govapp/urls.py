@@ -24,9 +24,8 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 
 # Local
-from govapp import are_migrations_running, views
+from govapp import views
 from govapp.apps.accounts.views import FileDeleteView, FileDownloadView, FileListView
-from govapp.default_data_manager import DefaultDataManager
 
 
 # Admin Site Settings
@@ -107,6 +106,3 @@ urlpatterns = [
 urlpatterns.append(urls.path("logout/", auth_views.LogoutView.as_view(), {"next_page": "/"}, name="logout"))
 if conf.settings.ENABLE_DJANGO_LOGIN:
     urlpatterns.append(urls.re_path(r"^ssologin/", auth_views.LoginView.as_view(), name="ssologin"))
-
-if not are_migrations_running():
-    DefaultDataManager()

@@ -1101,10 +1101,34 @@ class GeoServerGroupViewSet(
     # User
     @action(detail=True, methods=['get'])
     def users_related(self, request, pk=None):
-        group = shortcuts.get_object_or_404(GeoServerGroup, pk=pk)
-        geoserver_group_users = GeoServerGroupUser.objects.filter(geoserver_group=group)
-        users = [geoserver_group_user.user for geoserver_group_user in geoserver_group_users]
-        serializer = UserSerializer(users, many=True)
+        """
+        Retrieves a server-side paginated list of users for the specified group,
+        formatted for use with DataTables.js.
+        """
+        # Step 1: Get the group instance.
+        group = self.get_object()
+
+        # Step 2: Build the base queryset.
+        # This single query avoids the N+1 problem by querying the UserModel directly
+        # through the reverse relationship from the intermediate table.
+        queryset = UserModel.objects.filter(
+            geoservergroupuser__geoserver_group=group
+        ).order_by('id')  # Consistent ordering is required for pagination.
+
+        # Step 3: Let the ViewSet's configured pagination handle the rest.
+        # The `pagination_class` defined at the top of the ViewSet will be used.
+        page = self.paginate_queryset(queryset)
+        
+        # self.paginate_queryset returns a page of objects if pagination is active.
+        if page is not None:
+            # Serialize only the data for the current page.
+            serializer = UserSerializer(page, many=True)
+            # self.get_paginated_response will use the ViewSet's configured paginator
+            # and renderer to return a response in the format DataTables expects.
+            return self.get_paginated_response(serializer.data)
+
+        # This part is a fallback in case pagination is somehow disabled,
+        serializer = UserSerializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=['post'])

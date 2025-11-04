@@ -181,6 +181,29 @@ UserModel = auth.get_user_model()
 class GeoServerGroupUserManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().select_related('user', 'geoserver_group',)
+    
+    def link_users_to_group(self, user_queryset, group_instance):
+        """
+        Links a queryset of users to a single group instance using a single bulk_create query.
+
+        Args:
+            user_queryset (QuerySet): A queryset of UserModel objects to be linked.
+            group_instance (GeoServerGroup): The single GeoServerGroup object.
+
+        Returns:
+            int: The number of new links that were created or attempted.
+        """
+        # Build a list of the intermediate model instances to be created in memory.
+        links_to_create = [
+            self.model(user=user, geoserver_group=group_instance)
+            for user in user_queryset
+        ]
+
+        # Use bulk_create for maximum efficiency if there are objects to create.
+        if links_to_create:
+            self.bulk_create(links_to_create, ignore_conflicts=True)
+            
+        return len(links_to_create)
 
 
 class GeoServerGroupUser(models.Model):
@@ -192,6 +215,11 @@ class GeoServerGroupUser(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.geoserver_group}"
+
+    class Meta:
+        # This constraint is crucial for data integrity and for the
+        # 'ignore_conflicts=True' flag in bulk_create to work correctly.
+        unique_together = ('user', 'geoserver_group')
 
 
 class GeoServerRoleUserManager(models.Manager):
