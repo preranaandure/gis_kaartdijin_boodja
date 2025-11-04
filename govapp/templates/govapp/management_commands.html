@@ -116,8 +116,8 @@
                                           </td>
                                     </tr>
                                     <tr>
-                                          <td>Run Itassets Users Sync Cron Job</td>
-                                          <td>Synchronizes user accounts with the Itassets system, creating new users and updating details for existing ones.</td>
+                                          <td>Run Itassets Users Sync and Group Assignment Cron Job</td>
+                                          <td>Performs a complete user setup. First, it syncs accounts from Itassets, then assigns all {{ target_domain }} users to the default '{{ default_group_name }}' group.</td>
                                           <td><button class='btn btn-primary btn-sm' id='run-itassets-users-sync'>RUN</button>
                                                 <button class="btn btn-primary btn-sm" type="button" id='run-itassets-users-sync-loader' disabled>
                                                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
