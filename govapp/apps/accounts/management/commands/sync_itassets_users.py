@@ -8,6 +8,7 @@ import codecs
 import decouple
 import logging
 from govapp.apps.accounts import utils, emails
+from govapp.apps.publisher.models.geoserver_roles_groups import GeoServerGroup, GeoServerGroupUser
 
 
 logger = logging.getLogger(__name__)
@@ -24,6 +25,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
+            # --- START: Sync itassets users (email with @dbca.wa.gov.au) with UserModel --- #
             logger.info("Syncing Itassets Users ...")
             ITASSETS_USER_JSON_URL = decouple.config('ITASSETS_USER_JSON_URL', default=[])
             ITASSETS_USER_LOGIN = decouple.config('ITASSETS_USER_LOGIN', default='')
@@ -67,8 +69,43 @@ class Command(BaseCommand):
                         logger.info(f"User: [{new_user}] has been created.")
                         noaccount = noaccount + 1
                     row = row + 1
-
             logger.info(f"Successfully Completed Itassets Users Import.  Created Users: {str(noaccount)}.  Updated Users: {str(updatedaccount)}")
+            # --- END --- #
+
+            # --- START: Add users (email with @dbca.wa.gov.au) to the 'DBCA_Users' Group --- #
+            logger.info("Starting batch process to associate DBCA users with the 'DBCA_Users' GeoServer group...")
+            default_group_name = settings.GEOSERVER_GROUP_DBCA_USERS
+            target_domain = f"@{settings.DEPT_DOMAINS}"
+
+            try:
+                # Step 1: Get the target GeoServerGroup object.
+                # Using get() will raise a DoesNotExist exception if not found, which is handled below.
+                target_group = GeoServerGroup.objects.get(name=default_group_name)
+
+                # Step 2: Get a queryset of all active users with the specified email domain.
+                users_to_link = UserModel.objects.filter(
+                    is_active=True,
+                    email__endswith=target_domain
+                )
+
+                # Step 3: Call the manager method to perform the bulk link.
+                if users_to_link.exists():
+                    # This single line handles the creation of all necessary links.
+                    linked_count = GeoServerGroupUser.objects.link_users_to_group(users_to_link, target_group)
+                    logger.info(
+                        f"Successfully processed {users_to_link.count()} users for the [{default_group_name}] group. "
+                        f"({linked_count} links were created or confirmed to exist)."
+                    )
+                else:
+                    logger.info(f"No active users found with the domain [{target_domain}]. No group associations were made.")
+
+            except GeoServerGroup.DoesNotExist:
+                logger.error(
+                    f"The required GeoServer group [{default_group_name}] was not found in the database. "
+                    "Skipping user-group association. Please ensure the group exists."
+                )
+            # --- END --- #
+
         except Exception as e:
             time_error = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
             logger.error(f"Itassets Users Sync Error: {e}")
