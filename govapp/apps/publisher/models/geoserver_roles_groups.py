@@ -193,6 +193,11 @@ class GeoServerGroupUser(models.Model):
     def __str__(self):
         return f"{self.user} - {self.geoserver_group}"
 
+    class Meta:
+        # This constraint is crucial for data integrity and for the
+        # 'ignore_conflicts=True' flag in bulk_create to work correctly.
+        unique_together = ('user', 'geoserver_group')
+
 
 class GeoServerRoleUserManager(models.Manager):
     def get_queryset(self):
