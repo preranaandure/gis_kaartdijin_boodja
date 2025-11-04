@@ -116,6 +116,7 @@ class Command(BaseCommand):
             resp = requests.get(ITASSETS_USER_JSON_URL, auth=(ITASSETS_USER_LOGIN, ITASSETS_USER_TOKEN))
             resp.raise_for_status()
             data = json.loads(codecs.decode(resp.content, "utf-8-sig"))
+            logger.info(f"Successfully fetched {len(data)} user records from the Itassets API.")
 
             # --- Part 1: Sync users ---
             created_count, updated_count = self._sync_users(data)
