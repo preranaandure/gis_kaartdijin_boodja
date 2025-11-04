@@ -320,7 +320,7 @@ var kblayersubmission = {
     download_file: function(){
         common_entity_modal.show_progress();
         $.ajax({
-            url: kblayersubmission.var.layersubmission_data_url+$('#layer_submission_obj_id').val()+'/file',
+            url: kblayersubmission.var.layersubmission_data_url + $('#layer_submission_obj_id').val() + '/file',
             method: 'GET',
             xhrFields: {
                 responseType: 'blob'
@@ -338,8 +338,34 @@ var kblayersubmission = {
                 common_entity_modal.hide_progress();
             },
             error: function(xhr, status, error) {
-                common_entity_modal.show_alert("The target file does not exist.");
-                console.error(error);
+                // First, always hide the progress indicator on any error.
+                common_entity_modal.hide_progress();
+
+                // Check the HTTP status code to determine the cause of the error.
+                if (xhr.status === 403) {
+                    // --- Handle 403 Forbidden specifically ---
+                    // The backend sends a JSON response with an error message.
+                    var errorMessage = "You do not have permission to access this file."; // Default message
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response && response.error_msg) {
+                            errorMessage = response.error_msg;
+                        }
+                    } catch (e) {
+                        // If parsing fails, stick with the default message.
+                        console.error("Could not parse 403 error response as JSON:", xhr.responseText);
+                    }
+                    common_entity_modal.show_alert(errorMessage);
+
+                } else if (xhr.status === 404) {
+                    // --- Handle 404 Not Found ---
+                    common_entity_modal.show_alert("The target file does not exist.");
+
+                } else {
+                    // --- Handle all other errors (500, network issues, etc.) ---
+                    common_entity_modal.show_alert("An unexpected error occurred while trying to download the file.");
+                }
+                console.error("Download failed with status:", xhr.status, error);
             }
         });
     }
